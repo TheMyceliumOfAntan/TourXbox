@@ -167,14 +167,14 @@
       "positive": "Shift+WheelUp",
       "negative": "Shift+WheelDown",
       "speed": 15,
-      "note": "??????"
+      "note": "画布左右滚动"
     },
     "RY": {
       "mode": "tick",
       "positive": "WheelUp",
       "negative": "WheelDown",
       "speed": 15,
-      "note": "??????"
+      "note": "画布上下滚动"
     },
     "RB+DPadDown": {
       "mode": "tap",

@@ -298,6 +298,16 @@ internal static class Program
                 Binding binding = pair.Value;
                 string where = $"{name}:{pair.Key}";
 
+                // 防回归：备注/动作里出现问号基本就是把中文写坏了
+                foreach (string? text in new[]
+                         {
+                             binding.Action, binding.Positive, binding.Negative,
+                             binding.Modifier, binding.MouseButton, binding.Note,
+                         })
+                {
+                    Check($"{where} 文本无乱码", text == null || !text.Contains('?'), text);
+                }
+
                 switch (binding.ResolvedMode)
                 {
                     case BindingMode.None:

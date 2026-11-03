@@ -127,14 +127,14 @@
       "positive": "Right",
       "negative": "Left",
       "speed": 15,
-      "note": "??????"
+      "note": "画布左右滚动"
     },
     "RY": {
       "mode": "tick",
       "positive": "Up",
       "negative": "Down",
       "speed": 15,
-      "note": "??????"
+      "note": "画布上下滚动"
     },
     "RB+DPadRight": {
       "mode": "tap",
