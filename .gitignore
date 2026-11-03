@@ -23,3 +23,4 @@ TourXbox-*-win-x64.zip
 # Agent 工作记录（不属于项目内容）
 .memory/
 release-notes.md
+run_*.ps1
