@@ -38,8 +38,12 @@ public sealed class MappingEngine
     private bool _stickMacroActive;
     private float _rotateAngle;
     private double _rotatePixels;
-    private double _orbitAngle;
+    private double _orbitPhi;
+    private int _orbitFrames;
     private int _rotateWarmupFrames;
+
+    /// <summary>orbit 模式起手时半径从 0 长到目标值所用的帧数（约 32ms）。</summary>
+    private const int OrbitRampFrames = 8;
 
     public MappingEngine(ActionExecutor executor)
     {
@@ -552,7 +556,8 @@ public sealed class MappingEngine
             _stickMacroActive = true;
             _rotateAngle = angle;
             _rotatePixels = 0;
-            _orbitAngle = 0;
+            _orbitPhi = 0;
+            _orbitFrames = 0;
             _rotateWarmupFrames = stepMode ? 0 : 15; // 拖拽模式先让软件吃到修饰键，约 60ms
 
             if (!stepMode)
@@ -577,16 +582,24 @@ public sealed class MappingEngine
 
         double degrees = delta * (180.0 / Math.PI);
 
-        // orbit：让光标真的绕着锚点画圈（仅对"按光标角度旋转"的软件有效）
+        // orbit：光标跟着摇杆绕锚点画圈。
+        // 对"按光标角度旋转"的软件（SAI 实测如此）来说，这才是正确模型：
+        // 摇杆转多少，光标绕多少，画布就转多少，而且永远不越界、不需要归位。
         if (string.Equals(binding.Path, "orbit", StringComparison.OrdinalIgnoreCase))
         {
-            _orbitAngle += delta;
-            if (binding.Invert)
+            _orbitPhi += binding.Invert ? -delta : delta;
+
+            // 半径从 0 慢慢长到目标值，避免起手那一下被软件当成一次大位移
+            if (_orbitFrames < OrbitRampFrames)
             {
-                _orbitAngle -= 2 * delta;
+                _orbitFrames++;
             }
 
-            _executor.OrbitCursor(binding.CursorRadius ?? 200, _orbitAngle - (Math.PI / 2));
+            double radius = (binding.CursorRadius ?? 160) * (_orbitFrames / (double)OrbitRampFrames);
+
+            // 屏幕坐标 Y 向下：取负号，让摇杆顺时针 = 光标顺时针
+            double screenAngle = -_orbitPhi - (Math.PI / 2);
+            _executor.OrbitCursor((int)Math.Round(radius), screenAngle);
             return;
         }
 
