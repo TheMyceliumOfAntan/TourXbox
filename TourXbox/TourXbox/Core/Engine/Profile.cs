@@ -69,10 +69,17 @@ public sealed class Binding
     public int? CursorRadius { get; set; }
 
     /// <summary>
-    /// true = 到达半径后把光标拉回锚点继续（可无限拖，但画面会瞬移一下）；
-    /// false = 到达半径就停下，等用户松手重推（无瞬移）。
+    /// true = 到达半径后把光标拉回锚点继续（可无限拖，但光标会跳一下）；
+    /// false = 到达半径就停下，等用户松手重推。
     /// </summary>
     public bool Wrap { get; set; }
+
+    /// <summary>
+    /// 旋转时光标的移动方式：
+    /// linear（默认，可靠）= 按横向位移拖动，到边界无缝归位；
+    /// orbit = 让光标真的绕着锚点画圈，仅在软件按"光标角度"旋转时有效。
+    /// </summary>
+    public string? Path { get; set; }
 
     /// <summary>界面上显示的人类可读说明。</summary>
     public string? Note { get; set; }
@@ -102,6 +109,7 @@ public sealed class Binding
         Invert = Invert,
         CursorRadius = CursorRadius,
         Wrap = Wrap,
+        Path = Path,
         Note = Note,
     };
 }

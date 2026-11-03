@@ -38,6 +38,7 @@ public sealed class MappingEngine
     private bool _stickMacroActive;
     private float _rotateAngle;
     private double _rotatePixels;
+    private double _orbitAngle;
     private int _rotateWarmupFrames;
 
     public MappingEngine(ActionExecutor executor)
@@ -551,6 +552,7 @@ public sealed class MappingEngine
             _stickMacroActive = true;
             _rotateAngle = angle;
             _rotatePixels = 0;
+            _orbitAngle = 0;
             _rotateWarmupFrames = stepMode ? 0 : 15; // 拖拽模式先让软件吃到修饰键，约 60ms
 
             if (!stepMode)
@@ -574,6 +576,19 @@ public sealed class MappingEngine
         _rotateAngle = angle;
 
         double degrees = delta * (180.0 / Math.PI);
+
+        // orbit：让光标真的绕着锚点画圈（仅对"按光标角度旋转"的软件有效）
+        if (string.Equals(binding.Path, "orbit", StringComparison.OrdinalIgnoreCase))
+        {
+            _orbitAngle += delta;
+            if (binding.Invert)
+            {
+                _orbitAngle -= 2 * delta;
+            }
+
+            _executor.OrbitCursor(binding.CursorRadius ?? 200, _orbitAngle - (Math.PI / 2));
+            return;
+        }
 
         // 步进模式：不依赖软件的拖拽旋转，按角度发"顺时针/逆时针"按键
         if (stepMode)

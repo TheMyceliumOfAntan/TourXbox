@@ -72,8 +72,9 @@
       "mouseButton": "MouseLeft",
       "degreesToPixels": 3,
       "note": "LB + 左摇杆打圈 = 旋转画布",
-      "cursorRadius": 450,
-      "wrap": true
+      "cursorRadius": 300,
+      "wrap": true,
+      "path": "linear"
     },
     "LT+ROTATE": {
       "mode": "rotate",
@@ -81,8 +82,9 @@
       "mouseButton": "MouseLeft",
       "degreesToPixels": 3,
       "note": "LT + 左摇杆打圈 = 旋转画布（备用）",
-      "cursorRadius": 450,
-      "wrap": true
+      "cursorRadius": 300,
+      "wrap": true,
+      "path": "linear"
     },
     "R3": {
       "mode": "tap",

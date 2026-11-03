@@ -139,6 +139,21 @@ public sealed class ActionExecutor
         }
     }
 
+    /// <summary>
+    /// 把光标放到以锚点为圆心、指定半径的圆上（orbit 模式用）。
+    /// </summary>
+    public bool OrbitCursor(int radius, double angleRadians)
+    {
+        if (!_cursorAnchored)
+        {
+            return false;
+        }
+
+        int x = _cursorAnchor.X + (int)Math.Round(radius * Math.Cos(angleRadians));
+        int y = _cursorAnchor.Y + (int)Math.Round(radius * Math.Sin(angleRadians));
+        return NativeMethods.SetCursorPos(x, y);
+    }
+
     // ---------------- 光标锚点：拖拽宏期间不让光标跑出画布 ----------------
 
     private NativeMethods.POINT _cursorAnchor;

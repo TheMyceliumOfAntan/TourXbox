@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading;
 using TourXbox.Core.Actions;
 using TourXbox.Core.Engine;
+using TourXbox.Interop;
 
 namespace TourXbox.SelfTest;
 
@@ -65,6 +66,62 @@ internal static class Program
             KeyChord chord = KeyChord.Parse(args[1]);
             Console.WriteLine($"发送: {args[1]} -> vk=0x{chord.VirtualKey:X2} 修饰={chord.Modifiers.Count}");
             executor.Tap(chord);
+            return 0;
+        }
+
+        if (mode == "--orbit")
+        {
+            // 验证目标软件是否按"光标角度"旋转：按住修饰键+左键后让光标绕圈
+            int radius = args.Length >= 2 && int.TryParse(args[1], out int rr) ? rr : 200;
+            int turns = args.Length >= 3 && int.TryParse(args[2], out int tt) ? tt : 2;
+
+            using var watcher = new ForegroundWatcher();
+
+            string? process = null;
+            for (int i = 0; i < 60; i++)
+            {
+                Thread.Sleep(200);
+                process = watcher.ProcessName;
+                if (process != null && process.Contains("sai", StringComparison.OrdinalIgnoreCase))
+                {
+                    break;
+                }
+            }
+
+            Console.WriteLine($"前台进程: {process ?? "未知"}");
+            if (process == null || !process.Contains("sai", StringComparison.OrdinalIgnoreCase))
+            {
+                Console.WriteLine("前台不是 SAI，已中止");
+                return 2;
+            }
+
+            NativeMethods.GetCursorPos(out NativeMethods.POINT origin);
+            Console.WriteLine($"绕圈中心 ({origin.X},{origin.Y}) 半径 {radius} 圈数 {turns}");
+
+            KeyChord modifier = KeyChord.Parse("Alt+Space");
+            KeyChord button = KeyChord.Parse("MouseLeft");
+
+            executor.Hold(modifier);
+            Thread.Sleep(80);
+            executor.Hold(button);
+            Thread.Sleep(80);
+
+            int steps = 36 * turns;
+            for (int i = 1; i <= steps; i++)
+            {
+                double angle = i * 2 * Math.PI / 36;
+                int x = origin.X + (int)(radius * Math.Cos(angle));
+                int y = origin.Y + (int)(radius * Math.Sin(angle));
+                NativeMethods.SetCursorPos(x, y);
+                Thread.Sleep(16);
+            }
+
+            Thread.Sleep(80);
+            executor.Release(button);
+            executor.Release(modifier);
+            NativeMethods.SetCursorPos(origin.X, origin.Y);
+
+            Console.WriteLine("完成");
             return 0;
         }
 

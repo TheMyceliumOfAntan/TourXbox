@@ -53,8 +53,9 @@
       "mouseButton": "MouseLeft",
       "degreesToPixels": 3,
       "note": "打圈旋转：Alt+Space+左键拖拽",
-      "cursorRadius": 450,
-      "wrap": true
+      "cursorRadius": 300,
+      "wrap": true,
+      "path": "linear"
     },
     "LT+ROTATE": {
       "mode": "rotate",
