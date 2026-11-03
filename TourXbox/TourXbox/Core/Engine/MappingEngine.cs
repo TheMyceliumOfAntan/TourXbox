@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using TourXbox.Core.Actions;
 using TourXbox.Core.Input;
+using TourXbox.Interop;
 
 namespace TourXbox.Core.Engine;
 
@@ -39,11 +40,12 @@ public sealed class MappingEngine
     private float _rotateAngle;
     private double _rotatePixels;
     private double _orbitPhi;
-    private int _orbitFrames;
+    private double _orbitBase;
+    private int _orbitPivotX;
+    private int _orbitPivotY;
+    private int _orbitRadius = 220;
+    private int _stillFrames;
     private int _rotateWarmupFrames;
-
-    /// <summary>orbit 模式起手时半径从 0 长到目标值所用的帧数（约 32ms）。</summary>
-    private const int OrbitRampFrames = 8;
 
     public MappingEngine(ActionExecutor executor)
     {
@@ -77,6 +79,12 @@ public sealed class MappingEngine
 
     /// <summary>诊断输出（写日志用），可能每帧调用，需自行节流。</summary>
     public Action<string>? Trace { get; set; }
+
+    /// <summary>
+    /// 旋转绕圈的圆心（画布中心）。由上层用前台窗口的客户区中心提供；
+    /// 拿不到时退回光标位置。
+    /// </summary>
+    public Func<(int X, int Y)?>? PivotProvider { get; set; }
 
     private double _traceAccumulator;
 
@@ -305,7 +313,7 @@ public sealed class MappingEngine
         {
             float magnitude = MathF.Sqrt((state.Lx * state.Lx) + (state.Ly * state.Ly));
             TraceThrottled($"旋转层激活 幅度={magnitude:F2} 阈值={RotateDeadzone:F2} 宏={(string.IsNullOrWhiteSpace(rotate.Positive) ? "拖拽" : "步进")}");
-            RotateWithLeftStick(rotate, state);
+            RotateWithLeftStick(rotate, state, dt);
             return true;
         }
 
@@ -527,7 +535,7 @@ public sealed class MappingEngine
         _executor.MoveMouse(x, y, dt);
     }
 
-    private void RotateWithLeftStick(Binding binding, PadState state)
+    private void RotateWithLeftStick(Binding binding, PadState state, double dt)
     {
         float x = state.Lx;
         float y = state.Ly;
@@ -544,6 +552,7 @@ public sealed class MappingEngine
                 _stickMacroActive = false;
                 _rotateAngle = 0;
                 _rotatePixels = 0;
+                _orbitPhi = 0;
             }
 
             return;
@@ -557,12 +566,22 @@ public sealed class MappingEngine
             _rotateAngle = angle;
             _rotatePixels = 0;
             _orbitPhi = 0;
-            _orbitFrames = 0;
+            _stillFrames = 0;
             _rotateWarmupFrames = stepMode ? 0 : 15; // 拖拽模式先让软件吃到修饰键，约 60ms
+
+            if (!stepMode && IsOrbit(binding))
+            {
+                // 先记住原始位置，再把光标摆到绕圈轨道上，最后才按下鼠标键
+                _executor.BeginCursorAnchor();
+                PrepareOrbit(binding);
+            }
 
             if (!stepMode)
             {
-                _leftStickMacro.Begin(KeyChord.Parse(binding.Modifier), KeyChord.Parse(binding.MouseButton));
+                _leftStickMacro.Begin(
+                    KeyChord.Parse(binding.Modifier),
+                    KeyChord.Parse(binding.MouseButton),
+                    captureAnchor: !IsOrbit(binding));
             }
 
             Fired?.Invoke("左摇杆 打圈", "旋转画布", binding.Note ?? "旋转画布");
@@ -580,28 +599,31 @@ public sealed class MappingEngine
         float delta = NormalizeAngle(angle - _rotateAngle);
         _rotateAngle = angle;
 
-        double degrees = delta * (180.0 / Math.PI);
-
-        // orbit：光标跟着摇杆绕锚点画圈。
-        // 对"按光标角度旋转"的软件（SAI 实测如此）来说，这才是正确模型：
-        // 摇杆转多少，光标绕多少，画布就转多少，而且永远不越界、不需要归位。
-        if (string.Equals(binding.Path, "orbit", StringComparison.OrdinalIgnoreCase))
+        // 光标绕圈：以画布中心为轴，摇杆转多少光标转多少。
+        // 软件按"光标相对画布中心的夹角"计算旋转，所以必须绕中心转，
+        // 绕鼠标落点转会变成在中心两侧来回摆。
+        if (IsOrbit(binding))
         {
-            _orbitPhi += binding.Invert ? -delta : delta;
+            double spin = -delta; // 屏幕角度顺时针为正
 
-            // 半径从 0 慢慢长到目标值，避免起手那一下被软件当成一次大位移
-            if (_orbitFrames < OrbitRampFrames)
+            _orbitPhi += spin;
+
+            // 摇杆停在左右两侧时，持续旋转（按住不动也能转）
+            bool still = Math.Abs(delta) < 0.012f;
+            _stillFrames = still ? _stillFrames + 1 : 0;
+
+            if (_stillFrames > 6 && Math.Abs(x) > 0.55f)
             {
-                _orbitFrames++;
+                double rate = 2.4; // 弧度/秒（推满约 0.4 圈/秒）
+                _orbitPhi += (binding.Invert ? -x : x) * rate * dt;
             }
 
-            double radius = (binding.CursorRadius ?? 160) * (_orbitFrames / (double)OrbitRampFrames);
-
-            // 屏幕坐标 Y 向下：取负号，让摇杆顺时针 = 光标顺时针
-            double screenAngle = -_orbitPhi - (Math.PI / 2);
-            _executor.OrbitCursor((int)Math.Round(radius), screenAngle);
+            double screenAngle = _orbitBase + _orbitPhi;
+            _executor.OrbitCursor(_orbitPivotX, _orbitPivotY, _orbitRadius, screenAngle);
             return;
         }
+
+        double degrees = delta * (180.0 / Math.PI);
 
         // 步进模式：不依赖软件的拖拽旋转，按角度发"顺时针/逆时针"按键
         if (stepMode)
@@ -646,6 +668,50 @@ public sealed class MappingEngine
             }
         }
     }
+
+    private static bool IsOrbit(Binding binding) =>
+        string.Equals(binding.Path, "orbit", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// 开始绕圈前先把光标摆到"以画布中心为圆心"的圆上，这样起手不会有跳变。
+    /// 光标离中心太近时半径会兜底到最小值，此时才需要挪一下（按键还没按下，不会产生拖拽）。
+    /// </summary>
+    private void PrepareOrbit(Binding binding)
+    {
+        int radius = binding.CursorRadius is > 0 and int r ? r : 220;
+
+        if (PivotProvider?.Invoke() is (int pivotX, int pivotY))
+        {
+            _orbitPivotX = pivotX;
+            _orbitPivotY = pivotY;
+        }
+        else
+        {
+            // 拿不到窗口信息时退回用光标位置，至少行为可预期
+            NativeMethods.GetCursorPos(out NativeMethods.POINT p);
+            _orbitPivotX = p.X;
+            _orbitPivotY = p.Y;
+        }
+
+        NativeMethods.GetCursorPos(out NativeMethods.POINT cursor);
+
+        double dx = cursor.X - _orbitPivotX;
+        double dy = cursor.Y - _orbitPivotY;
+        double distance = Math.Sqrt((dx * dx) + (dy * dy));
+
+        _orbitBase = distance > 1 ? Math.Atan2(dy, dx) : -Math.PI / 2;
+
+        // 固定半径：太小的话圆心（画布中心）落在圈外，角度就会来回摆
+        _orbitRadius = radius;
+
+        if (Math.Abs(_orbitRadius - distance) > 6)
+        {
+            int targetX = _orbitPivotX + (int)Math.Round(_orbitRadius * Math.Cos(_orbitBase));
+            int targetY = _orbitPivotY + (int)Math.Round(_orbitRadius * Math.Sin(_orbitBase));
+            _executor.SetCursorPosition(targetX, targetY);
+        }
+    }
+
 
     private void TapAction(string text, string label)
     {
@@ -701,12 +767,15 @@ public sealed class MappingEngine
         /// <summary>当前按住的鼠标键（归位时需要临时松开）。</summary>
         public KeyChord? Button => _button;
 
-        public void Begin(KeyChord? key, KeyChord? button)
+        public void Begin(KeyChord? key, KeyChord? button, bool captureAnchor = true)
         {
             _key = key is { IsEmpty: false } ? key : null;
             _button = button is { IsEmpty: false } ? button : null;
 
-            _executor.BeginCursorAnchor();
+            if (captureAnchor)
+            {
+                _executor.BeginCursorAnchor();
+            }
 
             if (_key != null)
             {

@@ -53,7 +53,7 @@
       "mouseButton": "MouseLeft",
       "degreesToPixels": 3,
       "note": "打圈旋转：Alt+Space+左键拖拽",
-      "cursorRadius": 160,
+      "cursorRadius": 240,
       "wrap": true,
       "path": "orbit"
     },

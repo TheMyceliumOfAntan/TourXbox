@@ -139,18 +139,16 @@ public sealed class ActionExecutor
         }
     }
 
-    /// <summary>
-    /// 把光标放到以锚点为圆心、指定半径的圆上（orbit 模式用）。
-    /// </summary>
-    public bool OrbitCursor(int radius, double angleRadians)
-    {
-        if (!_cursorAnchored)
-        {
-            return false;
-        }
+    /// <summary>把光标放到绝对坐标。</summary>
+    public void SetCursorPosition(int x, int y) => NativeMethods.SetCursorPos(x, y);
 
-        int x = _cursorAnchor.X + (int)Math.Round(radius * Math.Cos(angleRadians));
-        int y = _cursorAnchor.Y + (int)Math.Round(radius * Math.Sin(angleRadians));
+    /// <summary>
+    /// 把光标放到以任意点为圆心、指定半径的圆上（orbit 模式用）。
+    /// </summary>
+    public bool OrbitCursor(int centerX, int centerY, int radius, double angleRadians)
+    {
+        int x = centerX + (int)Math.Round(radius * Math.Cos(angleRadians));
+        int y = centerY + (int)Math.Round(radius * Math.Sin(angleRadians));
         return NativeMethods.SetCursorPos(x, y);
     }
 

@@ -38,6 +38,9 @@ internal static class NativeMethods
     public static extern bool GetClientRect(IntPtr hWnd, out RECT rect);
 
     [DllImport("user32.dll")]
+    public static extern bool ClientToScreen(IntPtr hWnd, ref POINT point);
+
+    [DllImport("user32.dll")]
     public static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint flags);
 
     [DllImport("user32.dll")]

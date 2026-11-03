@@ -4,6 +4,7 @@ using System.Diagnostics;
 using TourXbox.Core.Actions;
 using TourXbox.Core.Engine;
 using TourXbox.Core.Input;
+using TourXbox.Interop;
 namespace TourXbox.Core;
 
 /// <summary>
@@ -36,6 +37,20 @@ public sealed class MappingService : IDisposable
         };
 
         Engine.Trace = message => Log.Write("引擎 " + message);
+
+        Engine.PivotProvider = () =>
+        {
+            IntPtr hwnd = Foreground.WindowHandle;
+            if (hwnd == IntPtr.Zero || !NativeMethods.GetClientRect(hwnd, out NativeMethods.RECT rect))
+            {
+                return null;
+            }
+
+            var center = new NativeMethods.POINT { X = rect.Width / 2, Y = rect.Height / 2 };
+            return NativeMethods.ClientToScreen(hwnd, ref center)
+                ? (center.X, center.Y)
+                : null;
+        };
     }
 
     public ProfileStore Profiles { get; }
