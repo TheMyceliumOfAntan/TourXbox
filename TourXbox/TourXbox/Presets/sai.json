@@ -1,0 +1,145 @@
+{
+  "name": "PaintTool SAI",
+  "processes": [
+    "sai2",
+    "sai"
+  ],
+  "bindings": {
+    "LX": {
+      "mode": "tick",
+      "positive": "]",
+      "negative": "[",
+      "speed": 13,
+      "note": "画笔大小"
+    },
+    "LY": {
+      "mode": "tick",
+      "positive": "PageUp",
+      "negative": "PageDown",
+      "speed": 14,
+      "note": "画布缩放"
+    },
+    "DPadLeft": {
+      "mode": "tap",
+      "action": "B",
+      "note": "画笔"
+    },
+    "DPadRight": {
+      "mode": "tap",
+      "action": "E",
+      "note": "橡皮"
+    },
+    "View": {
+      "mode": "tap",
+      "action": "Ctrl+Z",
+      "note": "撤销"
+    },
+    "Menu": {
+      "mode": "tap",
+      "action": "Ctrl+Y",
+      "note": "重做"
+    },
+    "L3+PAN": {
+      "mode": "drag",
+      "modifier": "Space",
+      "mouseButton": "MouseLeft",
+      "note": "按住 L3 时左摇杆平移画布",
+      "cursorRadius": 600,
+      "wrap": true
+    },
+    "LB+ROTATE": {
+      "mode": "rotate",
+      "modifier": "Alt+Space",
+      "mouseButton": "MouseLeft",
+      "degreesToPixels": 3,
+      "note": "打圈旋转：Alt+Space+左键拖拽",
+      "cursorRadius": 450,
+      "wrap": true
+    },
+    "LT+ROTATE": {
+      "mode": "rotate",
+      "positive": "K",
+      "negative": "J",
+      "stepDegrees": 5,
+      "note": "兜底步进：需在 SAI 快捷键设置里把 视图-旋转 设成 J/K"
+    },
+    "A": {
+      "mode": "tap",
+      "action": "B",
+      "note": "画笔"
+    },
+    "B": {
+      "mode": "tap",
+      "action": "E",
+      "note": "橡皮"
+    },
+    "X": {
+      "mode": "tap",
+      "action": "X",
+      "note": "切换主/副色"
+    },
+    "Y": {
+      "mode": "tap",
+      "action": "H",
+      "note": "水平翻转画布"
+    },
+    "R3": {
+      "mode": "tap",
+      "action": "Home",
+      "note": "适合画面并复位旋转"
+    },
+    "RB+RY": {
+      "mode": "tick",
+      "positive": "PageUp",
+      "negative": "PageDown",
+      "speed": 16,
+      "note": "缩放（粗调）"
+    },
+    "RB+RX": {
+      "mode": "tick",
+      "positive": "]",
+      "negative": "[",
+      "speed": 22,
+      "note": "画笔大小（粗调）"
+    },
+    "LB+DPadUp": {
+      "mode": "tap",
+      "action": "Up",
+      "note": "画布向上滚动"
+    },
+    "LB+DPadDown": {
+      "mode": "tap",
+      "action": "Down",
+      "note": "画布向下滚动"
+    },
+    "LB+DPadLeft": {
+      "mode": "tap",
+      "action": "Left",
+      "note": "画布向左滚动"
+    },
+    "LB+DPadRight": {
+      "mode": "tap",
+      "action": "Right",
+      "note": "画布向右滚动"
+    },
+    "RX": {
+      "mode": "tick",
+      "positive": "Right",
+      "negative": "Left",
+      "speed": 15,
+      "note": "??????"
+    },
+    "RY": {
+      "mode": "tick",
+      "positive": "Up",
+      "negative": "Down",
+      "speed": 15,
+      "note": "??????"
+    },
+    "RB+DPadRight": {
+      "mode": "tap",
+      "action": "H",
+      "note": "水平翻转画布（SAI 默认 H，开箱即用）"
+    }
+  }
+}

@@ -1,0 +1,195 @@
+{
+  "name": "Photoshop",
+  "processes": [
+    "photoshop"
+  ],
+  "bindings": {
+    "LX": {
+      "mode": "tick",
+      "positive": "]",
+      "negative": "[",
+      "speed": 13,
+      "note": "画笔大小"
+    },
+    "LY": {
+      "mode": "tick",
+      "positive": "Alt+WheelUp",
+      "negative": "Alt+WheelDown",
+      "speed": 14,
+      "note": "画布缩放"
+    },
+    "DPadLeft": {
+      "mode": "tap",
+      "action": ",",
+      "note": "上一笔刷预设"
+    },
+    "DPadRight": {
+      "mode": "tap",
+      "action": ".",
+      "note": "下一笔刷预设"
+    },
+    "DPadUp": {
+      "mode": "tap",
+      "action": "Alt+]",
+      "note": "上一图层"
+    },
+    "DPadDown": {
+      "mode": "tap",
+      "action": "Alt+[",
+      "note": "下一图层"
+    },
+    "View": {
+      "mode": "tap",
+      "action": "Ctrl+Z",
+      "note": "撤销"
+    },
+    "Menu": {
+      "mode": "tap",
+      "action": "Ctrl+Shift+Z",
+      "note": "重做"
+    },
+    "A": {
+      "mode": "tap",
+      "action": "B",
+      "note": "画笔"
+    },
+    "B": {
+      "mode": "tap",
+      "action": "E",
+      "note": "橡皮"
+    },
+    "X": {
+      "mode": "tap",
+      "action": "I",
+      "note": "吸管"
+    },
+    "Y": {
+      "mode": "tap",
+      "action": "Ctrl+Alt+Shift+=",
+      "note": "水平翻转画布"
+    },
+    "L3+PAN": {
+      "mode": "drag",
+      "modifier": "Space",
+      "mouseButton": "MouseLeft",
+      "note": "按住 L3 时左摇杆平移画布",
+      "cursorRadius": 600,
+      "wrap": true
+    },
+    "LB+ROTATE": {
+      "mode": "rotate",
+      "modifier": "R",
+      "mouseButton": "MouseLeft",
+      "degreesToPixels": 3,
+      "note": "LB + 左摇杆打圈 = 旋转画布",
+      "cursorRadius": 450,
+      "wrap": true
+    },
+    "LT+ROTATE": {
+      "mode": "rotate",
+      "modifier": "R",
+      "mouseButton": "MouseLeft",
+      "degreesToPixels": 3,
+      "note": "LT + 左摇杆打圈 = 旋转画布（备用）",
+      "cursorRadius": 450,
+      "wrap": true
+    },
+    "R3": {
+      "mode": "tap",
+      "action": "Ctrl+0",
+      "note": "适合屏幕"
+    },
+    "RB+RY": {
+      "mode": "tick",
+      "positive": "Shift+]",
+      "negative": "Shift+[",
+      "note": "画笔硬度"
+    },
+    "LB+DPadLeft": {
+      "mode": "tap",
+      "action": ",",
+      "note": "上一笔刷预设"
+    },
+    "LB+DPadRight": {
+      "mode": "tap",
+      "action": ".",
+      "note": "下一笔刷预设"
+    },
+    "LB+DPadUp": {
+      "mode": "tap",
+      "action": "WheelUp",
+      "note": "画布向上滚动"
+    },
+    "LB+DPadDown": {
+      "mode": "tap",
+      "action": "WheelDown",
+      "note": "画布向下滚动"
+    },
+    "LB+A": {
+      "mode": "tap",
+      "action": "Ctrl+G",
+      "note": "编组"
+    },
+    "LB+B": {
+      "mode": "tap",
+      "action": "Ctrl+E",
+      "note": "合并图层"
+    },
+    "LB+X": {
+      "mode": "tap",
+      "action": "Ctrl+D",
+      "note": "取消选择"
+    },
+    "LB+Y": {
+      "mode": "tap",
+      "action": "Ctrl+Shift+N",
+      "note": "新建图层"
+    },
+    "RB+A": {
+      "mode": "tap",
+      "action": "Tab",
+      "note": "显示 / 隐藏面板"
+    },
+    "RB+B": {
+      "mode": "tap",
+      "action": "Ctrl+0",
+      "note": "适合屏幕"
+    },
+    "RB+RX": {
+      "mode": "tick",
+      "positive": "]",
+      "negative": "[",
+      "speed": 22,
+      "note": "画笔大小（粗调）"
+    },
+    "RX": {
+      "mode": "tick",
+      "positive": "Shift+WheelUp",
+      "negative": "Shift+WheelDown",
+      "speed": 15,
+      "note": "??????"
+    },
+    "RY": {
+      "mode": "tick",
+      "positive": "WheelUp",
+      "negative": "WheelDown",
+      "speed": 15,
+      "note": "??????"
+    },
+    "RB+DPadDown": {
+      "mode": "tap",
+      "action": "Ctrl+Alt+Shift+-",
+      "note": "垂直翻转画布"
+    },
+    "RB+DPadLeft": {
+      "mode": "tap",
+      "action": "Ctrl+I",
+      "note": "反相"
+    },
+    "RB+DPadUp": {
+      "mode": "tap",
+      "action": "Ctrl+Shift+X",
+      "note": "液化"
+    }
+  }
+}

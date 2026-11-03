@@ -1,0 +1,155 @@
+{
+  "name": "Krita",
+  "processes": [
+    "krita"
+  ],
+  "bindings": {
+    "LX": {
+      "mode": "tick",
+      "positive": "]",
+      "negative": "[",
+      "speed": 13,
+      "note": "画笔大小"
+    },
+    "LY": {
+      "mode": "tick",
+      "positive": "WheelUp",
+      "negative": "WheelDown",
+      "speed": 14,
+      "note": "画布缩放"
+    },
+    "DPadUp": {
+      "mode": "tap",
+      "action": "Ctrl+]",
+      "note": "上一图层"
+    },
+    "DPadDown": {
+      "mode": "tap",
+      "action": "Ctrl+[",
+      "note": "下一图层"
+    },
+    "View": {
+      "mode": "tap",
+      "action": "Ctrl+Z",
+      "note": "撤销"
+    },
+    "Menu": {
+      "mode": "tap",
+      "action": "Ctrl+Shift+Z",
+      "note": "重做"
+    },
+    "A": {
+      "mode": "tap",
+      "action": "B",
+      "note": "自由手绘笔刷"
+    },
+    "B": {
+      "mode": "tap",
+      "action": "E",
+      "note": "橡皮"
+    },
+    "X": {
+      "mode": "tap",
+      "action": "I",
+      "note": "吸管"
+    },
+    "Y": {
+      "mode": "tap",
+      "action": "Ctrl+Shift+N",
+      "note": "新建图层"
+    },
+    "L3+PAN": {
+      "mode": "drag",
+      "modifier": "Space",
+      "mouseButton": "MouseLeft",
+      "note": "按住 L3 时左摇杆平移画布",
+      "cursorRadius": 600,
+      "wrap": true
+    },
+    "LB+ROTATE": {
+      "mode": "rotate",
+      "modifier": "Shift+Space",
+      "mouseButton": "MouseLeft",
+      "degreesToPixels": 3,
+      "note": "LB + 左摇杆打圈 = 旋转画布",
+      "cursorRadius": 450,
+      "wrap": true
+    },
+    "LT+ROTATE": {
+      "mode": "rotate",
+      "modifier": "Shift+Space",
+      "mouseButton": "MouseLeft",
+      "degreesToPixels": 3,
+      "note": "LT + 左摇杆打圈 = 旋转画布（备用）",
+      "cursorRadius": 450,
+      "wrap": true
+    },
+    "R3": {
+      "mode": "tap",
+      "action": "Ctrl+Shift+J",
+      "note": "适应画布"
+    },
+    "RB+RY": {
+      "mode": "tick",
+      "positive": "Shift+]",
+      "negative": "Shift+[",
+      "note": "画笔硬度"
+    },
+    "RB+RX": {
+      "mode": "tick",
+      "positive": "]",
+      "negative": "[",
+      "speed": 22,
+      "note": "画笔大小（粗调）"
+    },
+    "LB+DPadUp": {
+      "mode": "tap",
+      "action": "WheelUp",
+      "note": "画布向上滚动"
+    },
+    "LB+DPadDown": {
+      "mode": "tap",
+      "action": "WheelDown",
+      "note": "画布向下滚动"
+    },
+    "LB+A": {
+      "mode": "tap",
+      "action": "Ctrl+G",
+      "note": "编组"
+    },
+    "LB+B": {
+      "mode": "tap",
+      "action": "Ctrl+E",
+      "note": "合并图层"
+    },
+    "LB+X": {
+      "mode": "tap",
+      "action": "Ctrl+Shift+A",
+      "note": "取消选择"
+    },
+    "RB+A": {
+      "mode": "tap",
+      "action": "Tab",
+      "note": "显示 / 隐藏面板"
+    },
+    "RX": {
+      "mode": "tick",
+      "positive": "Shift+WheelUp",
+      "negative": "Shift+WheelDown",
+      "speed": 15,
+      "note": "??????"
+    },
+    "RY": {
+      "mode": "tick",
+      "positive": "WheelUp",
+      "negative": "WheelDown",
+      "speed": 15,
+      "note": "??????"
+    },
+    "RB+DPadRight": {
+      "mode": "tap",
+      "action": "M",
+      "note": "镜像画布（Krita 默认 M，开箱即用）"
+    }
+  }
+}
