@@ -69,6 +69,65 @@ internal static class Program
             return 0;
         }
 
+        if (mode == "--orbitc")
+        {
+            // 绕"前台窗口客户区中心"转圈，用来验证软件是不是按光标相对中心的夹角算旋转
+            int radius = args.Length >= 2 && int.TryParse(args[1], out int rad) ? rad : 240;
+            int turns = args.Length >= 3 && int.TryParse(args[2], out int tn) ? tn : 1;
+
+            using var watcher = new ForegroundWatcher();
+
+            string? process = null;
+            for (int i = 0; i < 60; i++)
+            {
+                Thread.Sleep(200);
+                process = watcher.ProcessName;
+                if (process != null && process.Contains("sai", StringComparison.OrdinalIgnoreCase))
+                {
+                    break;
+                }
+            }
+
+            Console.WriteLine($"前台进程: {process ?? "未知"}");
+            if (process == null || !process.Contains("sai", StringComparison.OrdinalIgnoreCase))
+            {
+                Console.WriteLine("前台不是 SAI，已中止");
+                return 2;
+            }
+
+            IntPtr hwnd = NativeMethods.GetForegroundWindow();
+            NativeMethods.GetClientRect(hwnd, out NativeMethods.RECT rc);
+            var center = new NativeMethods.POINT { X = rc.Width / 2, Y = rc.Height / 2 };
+            NativeMethods.ClientToScreen(hwnd, ref center);
+            Console.WriteLine($"客户区 {rc.Width}x{rc.Height} 中心 ({center.X},{center.Y}) 半径 {radius} 圈 {turns}");
+
+            NativeMethods.SetCursorPos(center.X + radius, center.Y);
+            Thread.Sleep(150);
+
+            KeyChord modifier = KeyChord.Parse("Alt+Space");
+            KeyChord button = KeyChord.Parse("MouseLeft");
+            executor.Hold(modifier);
+            Thread.Sleep(80);
+            executor.Hold(button);
+            Thread.Sleep(100);
+
+            int steps = 72 * turns;
+            for (int i = 1; i <= steps; i++)
+            {
+                double a = i * 2 * Math.PI / 72;
+                NativeMethods.SetCursorPos(
+                    center.X + (int)Math.Round(radius * Math.Cos(a)),
+                    center.Y + (int)Math.Round(radius * Math.Sin(a)));
+                Thread.Sleep(12);
+            }
+
+            Thread.Sleep(60);
+            executor.Release(button);
+            executor.Release(modifier);
+            Console.WriteLine("完成");
+            return 0;
+        }
+
         if (mode == "--orbit")
         {
             // 验证目标软件是否按"光标角度"旋转：按住修饰键+左键后让光标绕圈

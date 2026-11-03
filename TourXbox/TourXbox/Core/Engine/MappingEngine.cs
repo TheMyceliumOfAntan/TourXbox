@@ -44,6 +44,8 @@ public sealed class MappingEngine
     private int _orbitPivotX;
     private int _orbitPivotY;
     private int _orbitRadius = 220;
+    private bool _holdLinear;
+    private double _linearAccum;
     private int _stillFrames;
     private int _rotateWarmupFrames;
 
@@ -566,6 +568,9 @@ public sealed class MappingEngine
             _rotateAngle = angle;
             _rotatePixels = 0;
             _orbitPhi = 0;
+            _orbitBase = 0;
+            _linearAccum = 0;
+            _holdLinear = false;
             _stillFrames = 0;
             _rotateWarmupFrames = stepMode ? 0 : 15; // 拖拽模式先让软件吃到修饰键，约 60ms
 
@@ -599,27 +604,60 @@ public sealed class MappingEngine
         float delta = NormalizeAngle(angle - _rotateAngle);
         _rotateAngle = angle;
 
-        // 光标绕圈：以画布中心为轴，摇杆转多少光标转多少。
-        // 软件按"光标相对画布中心的夹角"计算旋转，所以必须绕中心转，
-        // 绕鼠标落点转会变成在中心两侧来回摆。
+        // 转圈：光标绕画布中心画圆（角度 1:1 跟随摇杆）
+        // 推住左右：直线扫（摇杆停在两侧时用直线持续转，而不是继续绕圈）
         if (IsOrbit(binding))
         {
-            double spin = -delta; // 屏幕角度顺时针为正
-
-            _orbitPhi += spin;
-
-            // 摇杆停在左右两侧时，持续旋转（按住不动也能转）
             bool still = Math.Abs(delta) < 0.012f;
-            _stillFrames = still ? _stillFrames + 1 : 0;
 
-            if (_stillFrames > 6 && Math.Abs(x) > 0.55f)
+            if (!still)
             {
-                double rate = 2.4; // 弧度/秒（推满约 0.4 圈/秒）
-                _orbitPhi += (binding.Invert ? -x : x) * rate * dt;
+                // 从直线切回绕圈时，把基准角改成当前光标角度，避免跳一下
+                if (_holdLinear)
+                {
+                    NativeMethods.GetCursorPos(out NativeMethods.POINT p);
+                    _orbitBase = Math.Atan2(p.Y - _orbitPivotY, p.X - _orbitPivotX);
+                    _orbitPhi = 0;
+                    _holdLinear = false;
+                }
+
+                _orbitPhi += -delta;
+                double orbitAngle = _orbitBase + _orbitPhi;
+                _executor.OrbitCursor(_orbitPivotX, _orbitPivotY, _orbitRadius, orbitAngle);
+                return;
             }
 
-            double screenAngle = _orbitBase + _orbitPhi;
-            _executor.OrbitCursor(_orbitPivotX, _orbitPivotY, _orbitRadius, screenAngle);
+            // 摇杆停住且推向一侧 -> 直线扫，到边界无缝续接
+            if (Math.Abs(x) > 0.5f)
+            {
+                _holdLinear = true;
+
+                double speed = 900 * Math.Abs(x); // 像素/秒（推满约 900px/s）
+                _linearAccum += speed * dt;
+
+                int step = (int)_linearAccum;
+                if (step > 0)
+                {
+                    _linearAccum -= step;
+
+                    int direction = x > 0 ? 1 : -1;
+                    if (binding.Invert)
+                    {
+                        direction = -direction;
+                    }
+
+                    if (_executor.AllowCursorMove(
+                            binding.CursorRadius ?? 240, wrap: true, _leftStickMacro.Button))
+                    {
+                        _executor.MoveMousePixels(step * direction, 0);
+                    }
+                }
+            }
+            else
+            {
+                _holdLinear = false;
+            }
+
             return;
         }
 
