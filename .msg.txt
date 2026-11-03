@@ -1,7 +1,0 @@
-fix: 发布包缺少 WinUI 界面资源导致启动闪退
-
-dotnet publish 不会自动复制应用自身的 .xbf（编译后的 XAML）和 TourXbox.pri
-（资源索引），上一版发布包因此一启动就 0xC000027B 崩溃。
-
-- csproj 增加 AfterTargets="Publish" 的目标，把 *.xbf 和 $(AssemblyName).pri 补进发布目录
-- 新增 scripts/package.ps1：发布后校验必需文件，缺任何一个直接报错，避免再发出跑不起来的包

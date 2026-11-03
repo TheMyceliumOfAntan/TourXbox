@@ -77,7 +77,16 @@ TourXbox 让你用手柄做到同样的事：
 
 ## 下载安装
 
-从 [Releases](https://github.com/TheMyceliumOfAntan/TourXbox/releases) 下载 `TourXbox-<版本>-win-x64.zip`，解压后双击 `TourXbox.exe` 即可，不需要安装运行时、不需要管理员权限。
+从 [Releases](https://github.com/TheMyceliumOfAntan/TourXbox/releases) 下载，两种任选：
+
+| 文件 | 说明 |
+| --- | --- |
+| `TourXbox-1.0.0-win-x64.exe` | **推荐**，单文件，双击即用 |
+| `TourXbox-1.0.0-win-x64.zip` | 目录版，解压后运行，启动更快、体积更小 |
+
+不需要安装 .NET 运行时，不需要管理员权限。
+
+> 单文件版第一次启动会把自己解压到 `%TEMP%\.net\TourXbox`（约 210 MB），所以首次稍慢，之后正常。介意的话用目录版。
 
 ### 系统要求
 

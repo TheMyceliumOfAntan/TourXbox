@@ -57,7 +57,8 @@
     <PublishTrimmed>False</PublishTrimmed>
   </PropertyGroup>
     <!-- WinUI 的 .xbf 与应用 pri 不会被 dotnet publish 自动带出去，手动补一份 -->
-  <Target Name="CopyWinUIResourcesToPublish" AfterTargets="Publish">
+  <Target Name="CopyWinUIResourcesToPublish" AfterTargets="Publish"
+          Condition="'$(PublishSingleFile)' != 'true'">
     <ItemGroup>
       <_WinUIAppResources Include="$(TargetDir)*.xbf" />
       <_WinUIAppResources Include="$(TargetDir)$(AssemblyName).pri" />

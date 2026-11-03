@@ -2,6 +2,11 @@
 [Bb]in/
 [Oo]bj/
 publish/
+publish-single/
+
+# 发布包（由 scripts/package.ps1 生成，只上传到 Release，不进仓库）
+TourXbox-*-win-x64.exe
+TourXbox-*-win-x64.zip
 
 # Visual Studio
 .vs/
@@ -13,6 +18,7 @@ publish/
 # 临时文件
 *.log
 *.zip
+.msg.txt
 
 # Agent 工作记录（不属于项目内容）
 .memory/
